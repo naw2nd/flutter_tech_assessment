@@ -1,0 +1,29 @@
+import 'package:flutter_tech_assessment/core/base/entity/base_list_param_entity.dart';
+import 'package:flutter_tech_assessment/core/base/entity/base_list_result_entity.dart';
+import 'package:flutter_tech_assessment/core/base/request/base_list_request.dart';
+import 'package:flutter_tech_assessment/core/utils/result.dart';
+import 'package:flutter_tech_assessment/modules/books/data/data_source/book_remote_data_source.dart';
+import 'package:flutter_tech_assessment/modules/books/domain/entity/book_entity.dart';
+import 'package:flutter_tech_assessment/modules/books/domain/interface/book_interface.dart';
+
+class BookRepository implements BookInterface {
+  final BookRemoteDataSource remoteDataSource;
+
+  BookRepository({required this.remoteDataSource});
+
+  @override
+  Future<Result<BaseListResultEntity<BookEntity>>> fetchBooks(
+    BaseListParamEntity param,
+  ) async {
+    try {
+      final request = BaseListRequest.fromEntity(param);
+
+      final response = await remoteDataSource.fetchBooks(request);
+      final result = response.toEntity<BookEntity>((e) => e.toEntity());
+
+      return Result.ok(result);
+    } on Exception catch (e) {
+      return Result.error(e);
+    }
+  }
+}
