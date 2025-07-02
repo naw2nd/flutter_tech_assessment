@@ -1,12 +1,13 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter_tech_assessment/core/base/entity/base_list_result_entity.dart';
 
-class BaseListResponse<T> {
+class BaseListResponse<T> extends Equatable {
   final int count;
   final String? next;
   final String? previous;
   final List<T> results;
 
-  BaseListResponse({
+  const BaseListResponse({
     required this.count,
     required this.next,
     required this.previous,
@@ -50,4 +51,7 @@ class BaseListResponse<T> {
       return 1;
     }
   }
+
+  @override
+  List<Object?> get props => [count, next, previous, results];
 }

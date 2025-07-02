@@ -1,7 +1,8 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter_tech_assessment/modules/books/domain/entity/book_detail_entity.dart';
 import 'package:flutter_tech_assessment/modules/books/domain/entity/book_entity.dart';
 
-class BookResponse {
+class BookResponse extends Equatable {
   final int? id;
   final String? title;
   final List<Author>? authors;
@@ -15,7 +16,7 @@ class BookResponse {
   final Map<String, String>? formats;
   final int? downloadCount;
 
-  BookResponse({
+  const BookResponse({
     this.id,
     this.title,
     this.authors,
@@ -75,14 +76,30 @@ class BookResponse {
       imageUrl: formats?['image/jpeg'],
     );
   }
+
+  @override
+  List<Object?> get props => [
+    id,
+    title,
+    authors,
+    summaries,
+    translators,
+    subjects,
+    bookshelves,
+    languages,
+    copyright,
+    mediaType,
+    formats,
+    downloadCount,
+  ];
 }
 
-class Author {
+class Author extends Equatable {
   final String name;
   final int? birthYear;
   final int? deathYear;
 
-  Author({required this.name, this.birthYear, this.deathYear});
+  const Author({required this.name, this.birthYear, this.deathYear});
 
   factory Author.fromJson(Map<String, dynamic> json) {
     return Author(
@@ -91,4 +108,7 @@ class Author {
       deathYear: json['death_year'],
     );
   }
+
+  @override
+  List<Object?> get props => [name, birthYear, deathYear];
 }

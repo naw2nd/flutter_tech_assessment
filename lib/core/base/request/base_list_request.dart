@@ -1,10 +1,11 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter_tech_assessment/core/base/entity/base_list_param_entity.dart';
 
-class BaseListRequest {
+class BaseListRequest extends Equatable {
   final int? page;
   final String? search;
 
-  BaseListRequest({this.page, this.search});
+  const BaseListRequest({this.page, this.search});
 
   Map<String, dynamic> toJson() {
     return {
@@ -16,4 +17,7 @@ class BaseListRequest {
   factory BaseListRequest.fromEntity(BaseListParamEntity entity) {
     return BaseListRequest(page: entity.page, search: entity.search);
   }
+
+  @override
+  List<Object?> get props => [page, search];
 }
