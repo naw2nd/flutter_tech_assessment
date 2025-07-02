@@ -1,0 +1,117 @@
+{
+  "count": 5,
+  "next": "http://gutendex.com/books/?page=2&title=Frankenstein",
+  "previous": null,
+  "results": [
+    {
+      "id": 1,
+      "title": "1984",
+      "authors": [
+        {
+          "name": "George Orwell",
+          "birth_year": 1903,
+          "death_year": 1950
+        }
+      ],
+      "summaries": ["A dystopian novel set in Airstrip One."],
+      "translators": [],
+      "subjects": ["Dystopia", "Totalitarianism"],
+      "bookshelves": ["Classics"],
+      "languages": ["en"],
+      "copyright": false,
+      "media_type": "Text",
+      "formats": {
+        "text/plain": "https://example.com/1984.txt"
+      },
+      "download_count": 1000
+    },
+    {
+      "id": 2,
+      "title": "To Kill a Mockingbird",
+      "authors": [
+        {
+          "name": "Harper Lee",
+          "birth_year": 1926,
+          "death_year": 2016
+        }
+      ],
+      "summaries": ["A novel about racial injustice in the Deep South."],
+      "translators": [],
+      "subjects": ["Racism", "Justice"],
+      "bookshelves": ["Classics"],
+      "languages": ["en"],
+      "copyright": false,
+      "media_type": "Text",
+      "formats": {
+        "text/plain": "https://example.com/mockingbird.txt"
+      },
+      "download_count": 900
+    },
+    {
+      "id": 3,
+      "title": "The Great Gatsby",
+      "authors": [
+        {
+          "name": "F. Scott Fitzgerald",
+          "birth_year": 1896,
+          "death_year": 1940
+        }
+      ],
+      "summaries": ["A story of the Jazz Age in the United States."],
+      "translators": [],
+      "subjects": ["Wealth", "Love"],
+      "bookshelves": ["Classics"],
+      "languages": ["en"],
+      "copyright": false,
+      "media_type": "Text",
+      "formats": {
+        "text/plain": "https://example.com/gatsby.txt"
+      },
+      "download_count": 800
+    },
+    {
+      "id": 4,
+      "title": "Pride and Prejudice",
+      "authors": [
+        {
+          "name": "Jane Austen",
+          "birth_year": 1775,
+          "death_year": 1817
+        }
+      ],
+      "summaries": ["A romantic novel of manners."],
+      "translators": [],
+      "subjects": ["Romance", "Society"],
+      "bookshelves": ["Classics"],
+      "languages": ["en"],
+      "copyright": false,
+      "media_type": "Text",
+      "formats": {
+        "text/plain": "https://example.com/pride.txt"
+      },
+      "download_count": 700
+    },
+    {
+      "id": 5,
+      "title": "Moby Dick",
+      "authors": [
+        {
+          "name": "Herman Melville",
+          "birth_year": 1819,
+          "death_year": 1891
+        }
+      ],
+      "summaries": ["A story of a giant whale and revenge."],
+      "translators": [],
+      "subjects": ["Adventure", "Sea"],
+      "bookshelves": ["Classics"],
+      "languages": ["en"],
+      "copyright": false,
+      "media_type": "Text",
+      "formats": {
+        "text/plain": "https://example.com/mobydick.txt"
+      },
+      "download_count": 600
+    }
+  ]
+}
