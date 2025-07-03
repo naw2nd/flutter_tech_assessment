@@ -9,4 +9,7 @@ abstract class BookInterface {
     BaseListParamEntity param,
   );
   Future<Result<BookDetailEntity>> fetchBookDetail(String id);
+  Future<List<String>> getBookIdFavorites();
+  Future addToFavorites(String id);
+  Future removeFromFavorites(String id);
 }

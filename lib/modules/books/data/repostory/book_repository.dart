@@ -39,4 +39,22 @@ class BookRepository implements BookInterface {
       return Result.error(e);
     }
   }
+
+  @override
+  Future addToFavorites(String id) {
+    // TODO: implement addToFavorites
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<String>> getBookIdFavorites() {
+    // TODO: implement getBookIdFavorites
+    throw UnimplementedError();
+  }
+
+  @override
+  Future removeFromFavorites(String id) {
+    // TODO: implement removeFromFavorites
+    throw UnimplementedError();
+  }
 }
