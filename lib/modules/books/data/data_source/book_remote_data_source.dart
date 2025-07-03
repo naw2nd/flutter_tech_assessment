@@ -7,6 +7,7 @@ import 'package:flutter_tech_assessment/modules/books/data/response/books_respon
 
 abstract class BookRemoteDataSource {
   Future<BaseListResponse<BookResponse>> fetchBooks(BaseListRequest request);
+  Future<BookResponse> fetchBookDetail(String id);
 }
 
 class BookRemoteDataSourceImpl implements BookRemoteDataSource {
@@ -28,6 +29,19 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
         response.data,
         (json) => BookResponse.fromJson(json),
       );
+
+      return result;
+    } on Exception catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<BookResponse> fetchBookDetail(String id) async {
+    try {
+      final response = await _apiClient.get('${ApiEndpoint.booksEndpoint}/$id');
+
+      final result = BookResponse.fromJson(response.data);
 
       return result;
     } on Exception catch (e) {

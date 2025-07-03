@@ -33,7 +33,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => BooksHomeProvider(bookInterface: context.read()),
         ),
-        ChangeNotifierProvider(create: (context) => BookDetailProvider()),
+        ChangeNotifierProvider(
+          create: (context) =>
+              BookDetailProvider(bookInterface: context.read()),
+        ),
         ChangeNotifierProvider(create: (context) => BookLikesProvider()),
       ],
       child: MaterialApp.router(

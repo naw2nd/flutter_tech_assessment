@@ -76,4 +76,43 @@ void main() {
       expect(result, isA<Error>());
     });
   });
+
+  group('BookRepository fetchBookDetail', () {
+    final id = '1';
+
+    test('should return book detail when fetchBookDetail is called', () async {
+      // Arrange
+      final tBookDetailResponse =
+          BooksTestData.baseListBookResponses.results.first;
+      final tBookDetailEntity =
+          BooksTestData.baseListBookDetailEntities.results.first;
+
+      when(() => mockBookRemoteDataSource.fetchBookDetail(id)).thenAnswer((
+        _,
+      ) async {
+        return tBookDetailResponse;
+      });
+
+      // Act
+      final result = await bookRepository.fetchBookDetail(id);
+
+      // Assert
+      expect(result, equals(Result.ok(tBookDetailEntity)));
+    });
+
+    test('throws ServerException when apiClient throws an exception', () async {
+      // Arrange
+      final exception = ServerException('Network error');
+
+      when(
+        () => mockBookRemoteDataSource.fetchBookDetail(id),
+      ).thenThrow(exception);
+
+      // Act
+      final result = await bookRepository.fetchBookDetail(id);
+
+      // Assert
+      expect(result, isA<Error>());
+    });
+  });
 }

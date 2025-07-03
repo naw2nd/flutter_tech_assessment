@@ -82,4 +82,43 @@ void main() {
       expect(() => call, throwsA(isA<ServerException>()));
     });
   });
+
+  group('BookRemoteDataSource fetchBookDetail', () {
+    final id = '1';
+    final path = '${ApiEndpoint.booksEndpoint}/$id';
+
+    test(
+      'should return a book detail when the API call is successful',
+      () async {
+        // Arrange
+        final tBookDetailResult = BaseListResponse<BookResponse>.fromJson(
+          BooksTestData.jsonMapResult,
+          (json) => BookResponse.fromJson(json),
+        ).results.first;
+        final bookDetailResponse =
+            (BooksTestData.jsonMapResult['results'] as List).first;
+
+        when(() => mockApiClient.get(path)).thenAnswer((_) async {
+          return ApiResponse(data: bookDetailResponse);
+        });
+
+        // Act
+        final result = await dataSource.fetchBookDetail(id);
+
+        // Assert
+        expect(result, equals(tBookDetailResult));
+      },
+    );
+
+    test('throws ServerException when apiClient throws an exception', () async {
+      // Arrange
+      when(() => mockApiClient.get(path)).thenThrow(Exception('Network error'));
+
+      // Act
+      final call = dataSource.fetchBookDetail(id);
+
+      // Assert
+      expect(() => call, throwsA(isA<ServerException>()));
+    });
+  });
 }
