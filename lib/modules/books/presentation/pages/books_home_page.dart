@@ -75,12 +75,13 @@ class _BooksHomePageState extends State<BooksHomePage> {
             Consumer<BooksHomeProvider>(
               builder: (context, provider, child) {
                 if (provider.state == DataState.loading) {
-                  return CircularProgressIndicator();
+                  return Center(child: CircularProgressIndicator());
                 }
 
                 if (provider.state == DataState.success) {
                   return Expanded(
                     child: ListView.builder(
+                      physics: AlwaysScrollableScrollPhysics(),
                       controller: _scrollController,
                       itemCount:
                           provider.books.length + (provider.hasMore ? 1 : 0),

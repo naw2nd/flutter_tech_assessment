@@ -54,7 +54,9 @@ class MyApp extends StatelessWidget {
           create: (context) =>
               BookDetailProvider(bookInterface: context.read()),
         ),
-        ChangeNotifierProvider(create: (context) => BookLikesProvider()),
+        ChangeNotifierProvider(
+          create: (context) => BookLikesProvider(bookInterface: context.read()),
+        ),
       ],
       child: MaterialApp.router(
         title: 'Flutter Demo',
