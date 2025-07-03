@@ -91,4 +91,16 @@ class BookRepository implements BookInterface {
       return Result.error(e);
     }
   }
+
+  @override
+  Future<Result<bool>> isFavorite(String id) async {
+    try {
+      final response = await _localDataSource.getBookIdFavorites();
+      final result = response.map((e) => e.toString()).toList();
+
+      return Result.ok(result.contains(id));
+    } on Exception catch (e) {
+      return Result.error(e);
+    }
+  }
 }

@@ -12,4 +12,5 @@ abstract class BookInterface {
   Future<Result<List<String>>> getBookIdFavorites();
   Future addToFavorites(String id);
   Future removeFromFavorites(String id);
+  Future<Result<bool>> isFavorite(String id);
 }

@@ -218,8 +218,53 @@ void main() {
     });
   });
 
-  group('BookRepository addToFavorites', () {
-    test('should return Success when setBookIdFavorites is called', () async {
+  group('BookRepository isFavorite', () {
+    test('should return true when isFavorite is called', () async {
+      // Arrange
+      when(() => mockBookLocalDataSource.getBookIdFavorites()).thenAnswer((
+        _,
+      ) async {
+        return BooksTestData.bookFavoriteIds;
+      });
+      // Act
+      final result = await bookRepository.isFavorite('5');
+
+      // Assert
+      expect(Result.ok(true), equals(result));
+    });
+
+    test('should return false when isFavorite is called', () async {
+      // Arrange
+      when(() => mockBookLocalDataSource.getBookIdFavorites()).thenAnswer((
+        _,
+      ) async {
+        return BooksTestData.bookFavoriteIds;
+      });
+      // Act
+      final result = await bookRepository.isFavorite('6');
+
+      // Assert
+      expect(Result.ok(false), equals(result));
+    });
+
+    test('return Error when localStorage throws an exception', () async {
+      // Arrange
+      final exception = StorageException('Storage error');
+
+      when(
+        () => mockBookLocalDataSource.getBookIdFavorites(),
+      ).thenThrow(exception);
+
+      // Act
+      final result = await bookRepository.isFavorite('5');
+
+      // Assert
+      expect(result, isA<Error>());
+    });
+  });
+
+  group('BookRepository removeFromFavorites', () {
+    test('should return Success when removeFromFavorites is called', () async {
       // Arrange
       List<int> ids = [];
       final modifiedIds = [
