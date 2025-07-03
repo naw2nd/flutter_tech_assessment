@@ -57,70 +57,77 @@ class _BooksHomePageState extends State<BooksHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Home')),
-      body: Column(
-        children: [
-          TextField(
-            decoration: InputDecoration(
-              hintText: 'Search',
-              border: OutlineInputBorder(),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await context.read<BooksHomeProvider>().fetchBooks();
+        },
+        child: Column(
+          children: [
+            TextField(
+              decoration: InputDecoration(
+                hintText: 'Search',
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (value) {
+                _onSearchChanged(value);
+              },
             ),
-            onChanged: (value) {
-              _onSearchChanged(value);
-            },
-          ),
-          Consumer<BooksHomeProvider>(
-            builder: (context, provider, child) {
-              if (provider.state == DataState.loading) {
-                return CircularProgressIndicator();
-              }
+            Consumer<BooksHomeProvider>(
+              builder: (context, provider, child) {
+                if (provider.state == DataState.loading) {
+                  return CircularProgressIndicator();
+                }
 
-              if (provider.state == DataState.success) {
-                return Expanded(
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    itemCount:
-                        provider.books.length + (provider.hasMore ? 1 : 0),
-                    itemBuilder: (context, index) {
-                      if (index < provider.books.length) {
-                        final book = provider.books[index];
-                        return ListTile(
-                          title: Text(book.title),
-                          subtitle: Wrap(
-                            children: [
-                              ...book.author.mapIndexed((i, author) {
-                                final text = (i == book.author.length - 1)
-                                    ? author
-                                    : '$author | ';
-                                return Text(text);
-                              }),
-                            ],
-                          ),
-                          onTap: () {
-                            context.push('${AppRouteConfig.books}/${book.id}');
-                          },
-                        );
-                      } else {
-                        // Show loading indicator at the bottom
-                        return Center(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 16),
-                            child: CircularProgressIndicator(),
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                );
-              }
+                if (provider.state == DataState.success) {
+                  return Expanded(
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      itemCount:
+                          provider.books.length + (provider.hasMore ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index < provider.books.length) {
+                          final book = provider.books[index];
+                          return ListTile(
+                            title: Text(book.title),
+                            subtitle: Wrap(
+                              children: [
+                                ...book.author.mapIndexed((i, author) {
+                                  final text = (i == book.author.length - 1)
+                                      ? author
+                                      : '$author | ';
+                                  return Text(text);
+                                }),
+                              ],
+                            ),
+                            onTap: () {
+                              context.push(
+                                '${AppRouteConfig.books}/${book.id}',
+                              );
+                            },
+                          );
+                        } else {
+                          // Show loading indicator at the bottom
+                          return Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  );
+                }
 
-              if (provider.state == DataState.error) {
-                return Text(provider.errorMessage);
-              }
+                if (provider.state == DataState.error) {
+                  return Text(provider.errorMessage);
+                }
 
-              return Container();
-            },
-          ),
-        ],
+                return Container();
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

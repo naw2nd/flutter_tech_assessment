@@ -29,6 +29,7 @@ class BooksHomeProvider extends ChangeNotifier {
   fetchBooks({String? search}) async {
     _booksPerPages.clear();
     _state = DataState.loading;
+    _errorMessage = '';
     notifyListeners();
 
     _param = _param.copyWith(search: search, page: 1);
