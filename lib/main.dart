@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tech_assessment/core/router.dart';
 import 'package:flutter_tech_assessment/core/service/api/api_client.dart';
+import 'package:flutter_tech_assessment/core/service/storage/local_storage.dart';
+import 'package:flutter_tech_assessment/modules/books/data/data_source/book_local_data_source.dart';
 import 'package:flutter_tech_assessment/modules/books/data/data_source/book_remote_data_source.dart';
 import 'package:flutter_tech_assessment/modules/books/data/repostory/book_repository.dart';
 import 'package:flutter_tech_assessment/modules/books/domain/interface/book_interface.dart';
@@ -21,6 +23,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider(create: (context) => ApiClient()),
+        Provider(create: (context) => LocalStorage()),
         Provider(
           create: (context) =>
               BookRemoteDataSourceImpl(apiClient: context.read())
@@ -28,7 +31,16 @@ class MyApp extends StatelessWidget {
         ),
         Provider(
           create: (context) =>
-              BookRepository(remoteDataSource: context.read()) as BookInterface,
+              BookLocalDataSourceImpl(localStorage: context.read())
+                  as BookLocalDataSource,
+        ),
+        Provider(
+          create: (context) =>
+              BookRepository(
+                    remoteDataSource: context.read(),
+                    localDataSource: context.read(),
+                  )
+                  as BookInterface,
         ),
         ChangeNotifierProvider(
           create: (context) => BooksHomeProvider(bookInterface: context.read()),

@@ -16,6 +16,12 @@ class BooksTestData {
     return File('./test/fakes/$name').readAsStringSync();
   }
 
+  static final bookFavoriteIds = bookResponses
+      .map((e) => e.id)
+      .whereType<int>()
+      .toList();
+  static final bookFavoriteIdsString = jsonEncode(bookFavoriteIds);
+
   static final List<BookResponse> bookResponses = [
     BookResponse(
       id: 1,

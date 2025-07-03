@@ -2,15 +2,21 @@ import 'package:flutter_tech_assessment/core/base/entity/base_list_param_entity.
 import 'package:flutter_tech_assessment/core/base/entity/base_list_result_entity.dart';
 import 'package:flutter_tech_assessment/core/base/request/base_list_request.dart';
 import 'package:flutter_tech_assessment/core/utils/result.dart';
+import 'package:flutter_tech_assessment/modules/books/data/data_source/book_local_data_source.dart';
 import 'package:flutter_tech_assessment/modules/books/data/data_source/book_remote_data_source.dart';
 import 'package:flutter_tech_assessment/modules/books/domain/entity/book_detail_entity.dart';
 import 'package:flutter_tech_assessment/modules/books/domain/entity/book_entity.dart';
 import 'package:flutter_tech_assessment/modules/books/domain/interface/book_interface.dart';
 
 class BookRepository implements BookInterface {
-  final BookRemoteDataSource remoteDataSource;
+  final BookRemoteDataSource _remoteDataSource;
+  final BookLocalDataSource _localDataSource;
 
-  BookRepository({required this.remoteDataSource});
+  BookRepository({
+    required BookRemoteDataSource remoteDataSource,
+    required BookLocalDataSource localDataSource,
+  }) : _remoteDataSource = remoteDataSource,
+       _localDataSource = localDataSource;
 
   @override
   Future<Result<BaseListResultEntity<BookEntity>>> fetchBooks(
@@ -19,7 +25,7 @@ class BookRepository implements BookInterface {
     try {
       final request = BaseListRequest.fromEntity(param);
 
-      final response = await remoteDataSource.fetchBooks(request);
+      final response = await _remoteDataSource.fetchBooks(request);
       final result = response.toEntity<BookEntity>((e) => e.toEntity());
 
       return Result.ok(result);
@@ -31,7 +37,7 @@ class BookRepository implements BookInterface {
   @override
   Future<Result<BookDetailEntity>> fetchBookDetail(String id) async {
     try {
-      final response = await remoteDataSource.fetchBookDetail(id);
+      final response = await _remoteDataSource.fetchBookDetail(id);
       final result = response.toDetailEntity();
 
       return Result.ok(result);
@@ -41,20 +47,48 @@ class BookRepository implements BookInterface {
   }
 
   @override
-  Future addToFavorites(String id) {
-    // TODO: implement addToFavorites
-    throw UnimplementedError();
+  Future addToFavorites(String id) async {
+    try {
+      final currentFavs = await _localDataSource.getBookIdFavorites();
+      final favs = currentFavs.map((e) => e.toString()).toList();
+      favs.add(id);
+
+      await _localDataSource.setBookIdFavorites(
+        favs.map((e) => int.parse(e)).toList(),
+      );
+
+      return Result.ok(null);
+    } on Exception catch (e) {
+      return Result.error(e);
+    }
   }
 
   @override
-  Future<List<String>> getBookIdFavorites() {
-    // TODO: implement getBookIdFavorites
-    throw UnimplementedError();
+  Future<Result<List<String>>> getBookIdFavorites() async {
+    try {
+      final response = await _localDataSource.getBookIdFavorites();
+      final result = response.map((e) => e.toString()).toList();
+
+      return Result.ok(result);
+    } on Exception catch (e) {
+      return Result.error(e);
+    }
   }
 
   @override
-  Future removeFromFavorites(String id) {
-    // TODO: implement removeFromFavorites
-    throw UnimplementedError();
+  Future removeFromFavorites(String id) async {
+    try {
+      final currentFavs = await _localDataSource.getBookIdFavorites();
+      final favs = currentFavs.map((e) => e.toString()).toList();
+      favs.remove(id);
+
+      await _localDataSource.setBookIdFavorites(
+        favs.map((e) => int.parse(e)).toList(),
+      );
+
+      return Result.ok(null);
+    } on Exception catch (e) {
+      return Result.error(e);
+    }
   }
 }
