@@ -8,4 +8,11 @@ class BaseListParamEntity extends Equatable {
 
   @override
   List<Object?> get props => [page, search];
+
+  BaseListParamEntity copyWith({int? page, String? search}) {
+    return BaseListParamEntity(
+      page: page ?? this.page,
+      search: search ?? this.search,
+    );
+  }
 }

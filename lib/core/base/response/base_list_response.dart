@@ -34,6 +34,7 @@ class BaseListResponse<T> extends Equatable {
     return BaseListResultEntity<E>(
       count: count,
       page: page,
+      hasMore: next?.isNotEmpty == true,
       results: results.map(toEntityE).toList(),
     );
   }
