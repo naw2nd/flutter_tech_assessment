@@ -20,7 +20,10 @@ class BookLocalDataSourceImpl implements BookLocalDataSource {
     try {
       final data =
           await _localStorage.get(key: LocalStorageKey.favoriteBookIds)
-              as String;
+              as String?;
+      if (data == null) {
+        return [];
+      }
 
       final List<dynamic> decoded = jsonDecode(data);
       final result = decoded.map((e) => int.parse(e.toString())).toList();

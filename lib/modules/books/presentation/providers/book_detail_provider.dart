@@ -10,10 +10,12 @@ class BookDetailProvider extends ChangeNotifier {
   String _errorMessage = '';
   DataState _state = DataState.initial;
   BookDetailEntity? _bookDetail;
+  bool _isFav = false;
 
   String get errorMessage => _errorMessage;
   DataState get state => _state;
   BookDetailEntity? get bookDetail => _bookDetail;
+  bool get isFav => _isFav;
 
   BookDetailProvider({required BookInterface bookInterface})
     : _bookInterface = bookInterface;
@@ -37,5 +39,46 @@ class BookDetailProvider extends ChangeNotifier {
     }
 
     notifyListeners();
+    _getFavoriteStatus();
+  }
+
+  _getFavoriteStatus() async {
+    if (bookDetail?.id == null || bookDetail?.id.isEmpty == true) {
+      return;
+    }
+    _isFav = false;
+    notifyListeners();
+
+    final result = await _bookInterface.isFavorite(bookDetail!.id);
+
+    switch (result) {
+      case Ok<bool>():
+        _isFav = result.value;
+
+      case Error<bool>():
+        _isFav = false;
+    }
+
+    notifyListeners();
+  }
+
+  toggleFavoriteStatus() async {
+    if (bookDetail?.id == null || bookDetail?.id.isEmpty == true) {
+      return;
+    }
+
+    Result result;
+    if (_isFav) {
+      result = await _bookInterface.removeFromFavorites(bookDetail!.id);
+    } else {
+      result = await _bookInterface.addToFavorites(bookDetail!.id);
+    }
+
+    switch (result) {
+      case Ok():
+        await _getFavoriteStatus();
+      case Error():
+        return;
+    }
   }
 }

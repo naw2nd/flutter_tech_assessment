@@ -77,6 +77,16 @@ class _BookDetailPageState extends State<BookDetailPage> {
                         }),
                       ],
                     ),
+                    IconButton(
+                      onPressed: () {
+                        provider.toggleFavoriteStatus();
+                      },
+                      icon: Icon(
+                        provider.isFav
+                            ? Icons.favorite
+                            : Icons.favorite_outline,
+                      ),
+                    ),
                   ],
                 ),
               ),

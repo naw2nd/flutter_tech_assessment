@@ -11,19 +11,24 @@ import 'package:flutter_tech_assessment/modules/books/presentation/providers/boo
 import 'package:flutter_tech_assessment/modules/books/presentation/providers/books_home_provider.dart';
 import 'package:provider/provider.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final localStorage = LocalStorage();
+  await localStorage.init();
+
+  runApp(MyApp(localStorage: localStorage));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({super.key, required this.localStorage});
+  final LocalStorage localStorage;
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         Provider(create: (context) => ApiClient()),
-        Provider(create: (context) => LocalStorage()),
+        Provider(create: (context) => localStorage),
         Provider(
           create: (context) =>
               BookRemoteDataSourceImpl(apiClient: context.read())
