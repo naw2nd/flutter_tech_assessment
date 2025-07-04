@@ -15,25 +15,41 @@ class AppRouteConfig {
       ShellRoute(
         builder: (context, state, child) => Scaffold(
           body: child,
-          bottomNavigationBar: BottomNavigationBar(
-            items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.favorite),
-                label: 'Likes',
-              ),
-            ],
-            currentIndex: state.uri.path == books ? 0 : 1,
-            onTap: (index) {
-              switch (index) {
-                case 0:
-                  context.go(books);
-                  break;
-                case 1:
-                  context.go(likes);
-                  break;
-              }
-            },
+          bottomNavigationBar: Container(
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black38,
+                  spreadRadius: 2,
+                  blurRadius: 10,
+                ),
+              ],
+            ),
+            child: BottomNavigationBar(
+              showSelectedLabels: false,
+              showUnselectedLabels: false,
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home_outlined),
+                  label: 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.favorite_outline),
+                  label: 'Likes',
+                ),
+              ],
+              currentIndex: state.uri.path == books ? 0 : 1,
+              onTap: (index) {
+                switch (index) {
+                  case 0:
+                    context.go(books);
+                    break;
+                  case 1:
+                    context.go(likes);
+                    break;
+                }
+              },
+            ),
           ),
         ),
         routes: [

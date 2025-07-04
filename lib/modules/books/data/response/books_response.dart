@@ -77,6 +77,7 @@ class BookResponse extends Equatable {
       id: id?.toString() ?? '<< No ID >>',
       title: title ?? '<< No Title >>',
       author: allAuthors,
+      imageUrl: formats?['image/jpeg'],
     );
   }
 

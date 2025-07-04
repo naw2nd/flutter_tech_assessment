@@ -9,6 +9,7 @@ import 'package:flutter_tech_assessment/modules/books/domain/interface/book_inte
 import 'package:flutter_tech_assessment/modules/books/presentation/providers/book_detail_provider.dart';
 import 'package:flutter_tech_assessment/modules/books/presentation/providers/book_likes_provider.dart';
 import 'package:flutter_tech_assessment/modules/books/presentation/providers/books_home_provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -62,6 +63,14 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Demo',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          textTheme: GoogleFonts.interTextTheme(),
+          scaffoldBackgroundColor: Colors.deepPurple,
+          appBarTheme: AppBarTheme(
+            color: Colors.deepPurple,
+            iconTheme: IconThemeData(color: Colors.white),
+            titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),
+            titleSpacing: 0,
+          ),
         ),
         routerConfig: AppRouteConfig.routes,
       ),

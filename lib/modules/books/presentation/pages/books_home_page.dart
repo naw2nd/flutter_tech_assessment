@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_tech_assessment/core/router.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter_tech_assessment/core/utils/data_state.dart';
+import 'package:flutter_tech_assessment/modules/books/domain/entity/book_entity.dart';
 import 'package:flutter_tech_assessment/modules/books/presentation/providers/books_home_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -56,80 +56,166 @@ class _BooksHomePageState extends State<BooksHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Home')),
+      appBar: AppBar(leading: Icon(Icons.home), title: const Text('Home')),
       body: RefreshIndicator(
         onRefresh: () async {
-          await context.read<BooksHomeProvider>().fetchBooks();
+          context.read<BooksHomeProvider>().fetchBooks();
         },
         child: Column(
           children: [
-            TextField(
-              decoration: InputDecoration(
-                hintText: 'Search',
-                border: OutlineInputBorder(),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: TextField(
+                decoration: InputDecoration(
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.only(left: 12, right: 4),
+                    child: Icon(Icons.search),
+                  ),
+                  prefixIconConstraints: BoxConstraints(),
+                  hintText: 'Search',
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  isDense: true,
+                ),
+                onChanged: (value) {
+                  _onSearchChanged(value);
+                },
               ),
-              onChanged: (value) {
-                _onSearchChanged(value);
-              },
             ),
-            Consumer<BooksHomeProvider>(
-              builder: (context, provider, child) {
-                if (provider.state == DataState.loading) {
-                  return Center(child: CircularProgressIndicator());
-                }
+            SizedBox(height: 15),
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(25)),
+                ),
+                child: Consumer<BooksHomeProvider>(
+                  builder: (context, provider, child) {
+                    if (provider.state == DataState.loading) {
+                      return Center(child: CircularProgressIndicator());
+                    }
 
-                if (provider.state == DataState.success) {
-                  return Expanded(
-                    child: ListView.builder(
-                      physics: AlwaysScrollableScrollPhysics(),
-                      controller: _scrollController,
-                      itemCount:
-                          provider.books.length + (provider.hasMore ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (index < provider.books.length) {
-                          final book = provider.books[index];
-                          return ListTile(
-                            title: Text(book.title),
-                            subtitle: Wrap(
-                              children: [
-                                ...book.author.mapIndexed((i, author) {
-                                  final text = (i == book.author.length - 1)
-                                      ? author
-                                      : '$author | ';
-                                  return Text(text);
-                                }),
-                              ],
-                            ),
-                            onTap: () {
-                              context.push(
-                                '${AppRouteConfig.books}/${book.id}',
+                    if (provider.state == DataState.success) {
+                      return ClipRRect(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(25),
+                          topRight: Radius.circular(25),
+                        ),
+                        child: ListView.builder(
+                          padding: EdgeInsets.only(top: 5),
+                          physics: AlwaysScrollableScrollPhysics(),
+                          controller: _scrollController,
+                          itemCount:
+                              provider.books.length +
+                              (provider.hasMore ? 1 : 0),
+                          itemBuilder: (context, index) {
+                            if (index < provider.books.length) {
+                              final book = provider.books[index];
+                              return BookTile(book: book);
+                            } else {
+                              // Show loading indicator at the bottom
+                              return Center(
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 16),
+                                  child: CircularProgressIndicator(),
+                                ),
                               );
-                            },
-                          );
-                        } else {
-                          // Show loading indicator at the bottom
-                          return Center(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(vertical: 16),
-                              child: CircularProgressIndicator(),
-                            ),
-                          );
-                        }
-                      },
-                    ),
-                  );
-                }
+                            }
+                          },
+                        ),
+                      );
+                    }
 
-                if (provider.state == DataState.error) {
-                  return Text(provider.errorMessage);
-                }
+                    if (provider.state == DataState.error) {
+                      return Text(provider.errorMessage);
+                    }
 
-                return Container();
-              },
+                    return Container();
+                  },
+                ),
+              ),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class BookTile extends StatelessWidget {
+  const BookTile({super.key, required this.book});
+
+  final BookEntity book;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: ListTile(
+            leading: Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(color: Colors.grey.shade300),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    offset: Offset(0, 15),
+                    blurRadius: 10,
+                    spreadRadius: 0,
+                  ),
+                ],
+              ),
+              child: book.imageUrl != null
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: Image.network(
+                        book.imageUrl!,
+                        height: 60,
+                        width: 60,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : null,
+            ),
+            title: Text(
+              book.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            subtitle: RichText(
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'by ',
+                    style: Theme.of(context).textTheme.labelSmall,
+                  ),
+                  TextSpan(
+                    text: book.authorString,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+            onTap: () {
+              context.push('${AppRouteConfig.books}/${book.id}');
+            },
+          ),
+        ),
+        Container(height: 5, color: Colors.grey.shade200),
+      ],
     );
   }
 }
