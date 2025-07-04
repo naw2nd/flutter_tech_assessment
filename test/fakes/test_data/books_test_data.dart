@@ -143,6 +143,7 @@ class BooksTestData {
       author: ['George Orwell'],
       summaries: ['A dystopian novel set in Airstrip One.'],
       imageUrl: null,
+      downloads: 1000,
       isLiked: false,
     ),
     BookDetailEntity(
@@ -151,6 +152,7 @@ class BooksTestData {
       author: ['Harper Lee'],
       summaries: ['A novel about racial injustice in the Deep South.'],
       imageUrl: null,
+      downloads: 900,
       isLiked: false,
     ),
     BookDetailEntity(
@@ -167,6 +169,7 @@ class BooksTestData {
       author: ['Jane Austen'],
       summaries: ['A romantic novel of manners.'],
       imageUrl: null,
+      downloads: 800,
       isLiked: false,
     ),
     BookDetailEntity(
@@ -175,6 +178,7 @@ class BooksTestData {
       author: ['Herman Melville'],
       summaries: ['A story of a giant whale and revenge.'],
       imageUrl: null,
+      downloads: 700,
       isLiked: false,
     ),
   ];

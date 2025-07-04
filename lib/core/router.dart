@@ -13,43 +13,56 @@ class AppRouteConfig {
     initialLocation: books,
     routes: [
       ShellRoute(
-        builder: (context, state, child) => Scaffold(
-          body: child,
-          bottomNavigationBar: Container(
-            decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black38,
-                  spreadRadius: 2,
-                  blurRadius: 10,
+        builder: (context, state, child) => SafeArea(
+          child: Stack(
+            children: [
+              child,
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  width: 200,
+                  padding: EdgeInsets.only(bottom: 15),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        spreadRadius: 0,
+                        blurRadius: 16,
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: BottomNavigationBar(
+                      showSelectedLabels: false,
+                      showUnselectedLabels: false,
+                      items: const [
+                        BottomNavigationBarItem(
+                          icon: Icon(Icons.home_outlined),
+                          label: 'Home',
+                        ),
+                        BottomNavigationBarItem(
+                          icon: Icon(Icons.favorite_outline),
+                          label: 'Likes',
+                        ),
+                      ],
+                      currentIndex: state.uri.path == books ? 0 : 1,
+                      onTap: (index) {
+                        switch (index) {
+                          case 0:
+                            context.go(books);
+                            break;
+                          case 1:
+                            context.go(likes);
+                            break;
+                        }
+                      },
+                    ),
+                  ),
                 ),
-              ],
-            ),
-            child: BottomNavigationBar(
-              showSelectedLabels: false,
-              showUnselectedLabels: false,
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home_outlined),
-                  label: 'Home',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.favorite_outline),
-                  label: 'Likes',
-                ),
-              ],
-              currentIndex: state.uri.path == books ? 0 : 1,
-              onTap: (index) {
-                switch (index) {
-                  case 0:
-                    context.go(books);
-                    break;
-                  case 1:
-                    context.go(likes);
-                    break;
-                }
-              },
-            ),
+              ),
+            ],
           ),
         ),
         routes: [

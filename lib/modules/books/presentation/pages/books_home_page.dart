@@ -15,7 +15,8 @@ class BooksHomePage extends StatefulWidget {
 
 class _BooksHomePageState extends State<BooksHomePage> {
   Timer? _debounce;
-  final ScrollController _scrollController = ScrollController();
+  final _scrollController = ScrollController();
+  final _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -41,6 +42,7 @@ class _BooksHomePageState extends State<BooksHomePage> {
   void dispose() {
     _debounce?.cancel();
     _scrollController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -64,20 +66,19 @@ class _BooksHomePageState extends State<BooksHomePage> {
             Padding(
               padding: const EdgeInsets.all(16),
               child: TextField(
+                controller: _searchController,
                 decoration: InputDecoration(
-                  prefixIcon: Padding(
-                    padding: const EdgeInsets.only(left: 12, right: 4),
-                    child: Icon(Icons.search),
-                  ),
-                  prefixIconConstraints: BoxConstraints(),
+                  suffixIcon: Icon(Icons.search),
                   hintText: 'Search',
+                  contentPadding: EdgeInsets.only(left: 20),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   isDense: true,
                 ),
+                onTapOutside: (_) => FocusScope.of(context).unfocus(),
                 onChanged: (value) {
                   _onSearchChanged(value);
                 },
@@ -100,7 +101,6 @@ class _BooksHomePageState extends State<BooksHomePage> {
                       return ClipRRect(
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(25),
-                          topRight: Radius.circular(25),
                         ),
                         child: ListView.builder(
                           padding: EdgeInsets.only(top: 5),
@@ -127,11 +127,22 @@ class _BooksHomePageState extends State<BooksHomePage> {
                       );
                     }
 
-                    if (provider.state == DataState.error) {
-                      return Text(provider.errorMessage);
-                    }
-
-                    return Container();
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(provider.errorMessage),
+                          // SizedBox(height: 10),
+                          TextButton(
+                            onPressed: () {
+                              _searchController.clear();
+                              context.read<BooksHomeProvider>().fetchBooks();
+                            },
+                            child: Text('Refresh'),
+                          ),
+                        ],
+                      ),
+                    );
                   },
                 ),
               ),

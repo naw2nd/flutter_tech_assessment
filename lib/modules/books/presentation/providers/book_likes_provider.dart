@@ -37,6 +37,10 @@ class BookLikesProvider extends ChangeNotifier {
 
     await _getFavorites();
     if (_favoriteIds.isEmpty) {
+      _state = DataState.error;
+      _errorMessage = 'Data is empty';
+      notifyListeners();
+
       return;
     }
 

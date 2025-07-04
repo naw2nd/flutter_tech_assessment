@@ -43,6 +43,7 @@ dependencies:
   pretty_dio_logger: ^1.4.0
   shared_preferences: ^2.5.3
   google_fonts: ^6.2.1
+  toastification: ^3.0.3
 
 dev_dependencies:
   flutter_test:

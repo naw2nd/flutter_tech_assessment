@@ -71,6 +71,13 @@ class MyApp extends StatelessWidget {
             titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),
             titleSpacing: 0,
           ),
+          floatingActionButtonTheme: FloatingActionButtonThemeData(
+            backgroundColor: Colors.deepPurple,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadiusGeometry.circular(20),
+            ),
+          ),
         ),
         routerConfig: AppRouteConfig.routes,
       ),

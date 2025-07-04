@@ -4,9 +4,10 @@ import 'package:flutter_tech_assessment/modules/books/domain/entity/book_entity.
 import 'package:go_router/go_router.dart';
 
 class BookTile extends StatelessWidget {
-  const BookTile({super.key, required this.book});
+  const BookTile({super.key, required this.book, this.onFinished});
 
   final BookEntity book;
+  final Function? onFinished;
 
   @override
   Widget build(BuildContext context) {
@@ -67,12 +68,17 @@ class BookTile extends StatelessWidget {
                 ],
               ),
             ),
-            onTap: () {
-              context.push('${AppRouteConfig.books}/${book.id}');
+            onTap: () async {
+              await context.push('${AppRouteConfig.books}/${book.id}');
+              onFinished?.call();
             },
           ),
         ),
-        Container(height: 5, color: Colors.grey.shade200),
+        Container(
+          height: 5,
+          color: Colors.grey.shade100,
+          margin: EdgeInsets.symmetric(horizontal: 15),
+        ),
       ],
     );
   }

@@ -74,7 +74,12 @@ class _BookLikesPageState extends State<BookLikesPage> {
                     itemBuilder: (context, index) {
                       if (index < provider.favBooks.length) {
                         final book = provider.favBooks[index];
-                        return BookTile(book: book);
+                        return BookTile(
+                          book: book,
+                          onFinished: () {
+                            provider.fetchBooks();
+                          },
+                        );
                       } else {
                         // Show loading indicator at the bottom
                         return Center(
@@ -89,11 +94,21 @@ class _BookLikesPageState extends State<BookLikesPage> {
                 );
               }
 
-              if (provider.state == DataState.error) {
-                return Text(provider.errorMessage);
-              }
-
-              return Container();
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(provider.errorMessage),
+                    // SizedBox(height: 10),
+                    TextButton(
+                      onPressed: () {
+                        context.read<BookLikesProvider>().fetchBooks();
+                      },
+                      child: Text('Refresh'),
+                    ),
+                  ],
+                ),
+              );
             },
           ),
         ),

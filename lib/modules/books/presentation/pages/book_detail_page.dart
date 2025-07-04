@@ -1,9 +1,11 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tech_assessment/core/utils/data_state.dart';
+import 'package:flutter_tech_assessment/core/utils/extension.dart';
 import 'package:flutter_tech_assessment/modules/books/domain/entity/book_detail_entity.dart';
 import 'package:flutter_tech_assessment/modules/books/presentation/providers/book_detail_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:toastification/toastification.dart';
 
 class BookDetailPage extends StatefulWidget {
   const BookDetailPage({super.key, required this.bookId});
@@ -33,65 +35,109 @@ class _BookDetailPageState extends State<BookDetailPage> {
       builder: (context, provider, child) {
         return Scaffold(
           appBar: AppBar(title: Text('Details')),
-          backgroundColor: Colors.white,
-          body: Builder(
-            builder: (context) {
-              if (provider.state == DataState.loading) {
-                return Center(child: CircularProgressIndicator());
-              }
-              if (provider.state == DataState.success &&
-                  provider.bookDetail != null) {
-                final book = provider.bookDetail!;
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    if (widget.bookId != null) {
-                      await context.read<BookDetailProvider>().fetchBookDetail(
-                        widget.bookId!,
-                      );
-                    }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: ListView(
-                      children: [
-                        SizedBox(height: 20),
-                        Center(child: BookDisplay(book: book)),
-                        SizedBox(height: 20),
-                        Text(
-                          'Synopsis',
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.w900),
+          body: Container(
+            margin: EdgeInsets.only(top: 10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(25)),
+            ),
+            child: Builder(
+              builder: (context) {
+                if (provider.state == DataState.loading) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                if (provider.state == DataState.success &&
+                    provider.bookDetail != null) {
+                  final book = provider.bookDetail!;
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      if (widget.bookId != null) {
+                        await context
+                            .read<BookDetailProvider>()
+                            .fetchBookDetail(widget.bookId!);
+                      }
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(25),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: ListView(
+                          children: [
+                            SizedBox(height: 20),
+                            Center(child: BookDisplay(book: book)),
+                            SizedBox(height: 20),
+                            Text(
+                              'Synopsis',
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.w900),
+                            ),
+                            SizedBox(height: 5),
+                            ...book.summaries.map(
+                              (e) => Text(
+                                e,
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(color: Colors.black54),
+                                textAlign: TextAlign.justify,
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 5),
-                        ...book.summaries.map(
-                          (e) => Text(
-                            e,
-                            style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(color: Colors.black54),
-                            textAlign: TextAlign.justify,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
+                  );
+                }
+
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(provider.errorMessage),
+                      // SizedBox(height: 10),
+                      TextButton(
+                        onPressed: () {
+                          if (widget.bookId != null) {
+                            context.read<BookDetailProvider>().fetchBookDetail(
+                              widget.bookId!,
+                            );
+                          }
+                        },
+                        child: Text('Refresh'),
+                      ),
+                    ],
                   ),
                 );
-              }
-
-              if (provider.state == DataState.error) {
-                return Center(child: Text(provider.errorMessage));
-              }
-
-              return Container();
-            },
-          ),
-          floatingActionButton: FloatingActionButton(
-            child: Icon(
-              provider.isFav ? Icons.favorite : Icons.favorite_outline,
+              },
             ),
-            onPressed: () {
-              provider.toggleFavoriteStatus();
-            },
           ),
+          floatingActionButton: provider.state == DataState.success
+              ? FloatingActionButton(
+                  child: Icon(
+                    provider.isFav ? Icons.favorite : Icons.favorite_outline,
+                  ),
+                  onPressed: () async {
+                    await provider.toggleFavoriteStatus();
+                    String toastText = 'Added to likes';
+                    if (!provider.isFav) {
+                      toastText = 'Removed from likes';
+                    }
+
+                    if (!context.mounted) return;
+                    toastification.show(
+                      context: context,
+                      icon: Icon(
+                        provider.isFav
+                            ? Icons.favorite
+                            : Icons.favorite_outline,
+                        color: Colors.deepPurple,
+                      ),
+                      title: Text(toastText),
+                      autoCloseDuration: Duration(seconds: 1),
+                    );
+                  },
+                )
+              : null,
         );
       },
     );
@@ -143,7 +189,6 @@ class BookDisplay extends StatelessWidget {
             children: [
               Text(
                 book.title,
-                overflow: TextOverflow.ellipsis,
                 style: Theme.of(
                   context,
                 ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -168,6 +213,31 @@ class BookDisplay extends StatelessWidget {
                   ],
                   style: Theme.of(context).textTheme.labelSmall,
                 ),
+              ),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  Icon(Icons.download, color: Colors.green, size: 15),
+                  SizedBox(width: 2),
+                  Flexible(
+                    child: RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(text: book.downloads?.toAbbreviatedString()),
+                          TextSpan(
+                            text: ' Downloads',
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(color: Colors.green),
+                          ),
+                        ],
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

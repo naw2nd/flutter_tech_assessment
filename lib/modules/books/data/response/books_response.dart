@@ -92,6 +92,7 @@ class BookResponse extends Equatable {
       author: allAuthors,
       summaries: summaries ?? [],
       imageUrl: formats?['image/jpeg'],
+      downloads: downloadCount,
     );
   }
 

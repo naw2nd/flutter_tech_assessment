@@ -28,6 +28,7 @@ class BooksHomeProvider extends ChangeNotifier {
 
   fetchBooks({String? search}) async {
     _booksPerPages.clear();
+    _param = BaseListParamEntity(page: 1);
     _state = DataState.loading;
     _errorMessage = '';
     notifyListeners();
@@ -35,6 +36,10 @@ class BooksHomeProvider extends ChangeNotifier {
     _param = _param.copyWith(search: search, page: 1);
     await _fetchBooks();
 
+    if (books.isEmpty) {
+      _state = DataState.error;
+      _errorMessage = 'Data is empty';
+    }
     notifyListeners();
   }
 
