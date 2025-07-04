@@ -47,7 +47,7 @@ class BookRepository implements BookInterface {
     BaseListResponse<BookResponse> response,
   ) async {
     try {
-      await _localDataSource.setCachedBook(request, response);
+      await _localDataSource.setCachedBooks(request, response);
     } catch (e) {
       return;
     }
@@ -58,7 +58,7 @@ class BookRepository implements BookInterface {
     Exception prevE,
   ) async {
     try {
-      final response = await _localDataSource.getCachedBook(request);
+      final response = await _localDataSource.getCachedBooks(request);
       final result = response.toEntity<BookEntity>((e) => e.toEntity());
 
       return Result.ok(result);
@@ -73,9 +73,35 @@ class BookRepository implements BookInterface {
       final response = await _remoteDataSource.fetchBookDetail(id);
       final result = response.toDetailEntity();
 
+      _setCachedBookDetail(id, response);
+
       return Result.ok(result);
+    } on ServerException catch (e) {
+      return _getCachedBookDetail(id, e);
     } on Exception catch (e) {
       return Result.error(e);
+    }
+  }
+
+  Future _setCachedBookDetail(String id, BookResponse response) async {
+    try {
+      await _localDataSource.setCachedBookDetail(id, response);
+    } catch (e) {
+      return;
+    }
+  }
+
+  Future<Result<BookDetailEntity>> _getCachedBookDetail(
+    String id,
+    Exception prevE,
+  ) async {
+    try {
+      final response = await _localDataSource.getCachedBookDetail(id);
+      final result = response.toDetailEntity();
+
+      return Result.ok(result);
+    } on Exception {
+      return Result.error(prevE);
     }
   }
 

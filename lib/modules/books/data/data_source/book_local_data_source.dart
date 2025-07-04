@@ -10,11 +10,15 @@ import 'package:flutter_tech_assessment/modules/books/data/response/books_respon
 abstract class BookLocalDataSource {
   Future<List<int>> getBookIdFavorites();
   Future setBookIdFavorites(List<int> ids);
-  Future<BaseListResponse<BookResponse>> getCachedBook(BaseListRequest request);
-  Future setCachedBook(
+  Future<BaseListResponse<BookResponse>> getCachedBooks(
+    BaseListRequest request,
+  );
+  Future setCachedBooks(
     BaseListRequest request,
     BaseListResponse<BookResponse> datas,
   );
+  Future<BookResponse> getCachedBookDetail(String id);
+  Future setCachedBookDetail(String id, BookResponse data);
 }
 
 class BookLocalDataSourceImpl implements BookLocalDataSource {
@@ -56,7 +60,7 @@ class BookLocalDataSourceImpl implements BookLocalDataSource {
   }
 
   @override
-  Future<BaseListResponse<BookResponse>> getCachedBook(
+  Future<BaseListResponse<BookResponse>> getCachedBooks(
     BaseListRequest request,
   ) async {
     try {
@@ -79,7 +83,7 @@ class BookLocalDataSourceImpl implements BookLocalDataSource {
   }
 
   @override
-  Future setCachedBook(
+  Future setCachedBooks(
     BaseListRequest request,
     BaseListResponse<BookResponse> datas,
   ) async {
@@ -92,6 +96,42 @@ class BookLocalDataSourceImpl implements BookLocalDataSource {
 
       await _localStorage.set(
         key: LocalStorageKey.cachedBooks + jsonKey,
+        value: jsonValue,
+      );
+    } on Exception catch (e) {
+      throw StorageException(e.toString());
+    }
+  }
+
+  @override
+  Future<BookResponse> getCachedBookDetail(String id) async {
+    try {
+      final key = id;
+      final jsonKey = jsonEncode(key);
+
+      final jsonResult = await _localStorage.get(
+        key: LocalStorageKey.cachedBookDetail + jsonKey,
+      );
+      final mapResult = jsonDecode(jsonResult);
+      final result = BookResponse.fromJson(mapResult);
+
+      return result;
+    } on Exception catch (e) {
+      throw StorageException(e.toString());
+    }
+  }
+
+  @override
+  Future setCachedBookDetail(String id, BookResponse data) async {
+    try {
+      final key = id;
+      final jsonKey = jsonEncode(key);
+
+      final value = data.toJson();
+      final jsonValue = jsonEncode(value);
+
+      await _localStorage.set(
+        key: LocalStorageKey.cachedBookDetail + jsonKey,
         value: jsonValue,
       );
     } on Exception catch (e) {

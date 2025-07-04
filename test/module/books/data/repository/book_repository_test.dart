@@ -37,7 +37,7 @@ void main() {
         return BooksTestData.baseListBookResponses;
       });
       when(
-        () => mockBookLocalDataSource.setCachedBook(
+        () => mockBookLocalDataSource.setCachedBooks(
           request,
           BooksTestData.baseListBookResponses,
         ),
@@ -65,7 +65,7 @@ void main() {
           return BooksTestData.baseListBookResponses;
         });
         when(
-          () => mockBookLocalDataSource.setCachedBook(
+          () => mockBookLocalDataSource.setCachedBooks(
             request,
             BooksTestData.baseListBookResponses,
           ),
@@ -91,7 +91,7 @@ void main() {
         () => mockBookRemoteDataSource.fetchBooks(request),
       ).thenThrow(exception);
       when(
-        () => mockBookLocalDataSource.getCachedBook(request),
+        () => mockBookLocalDataSource.getCachedBooks(request),
       ).thenThrow(exception);
 
       // Act
@@ -131,6 +131,9 @@ void main() {
 
       when(
         () => mockBookRemoteDataSource.fetchBookDetail(id),
+      ).thenThrow(exception);
+      when(
+        () => mockBookLocalDataSource.getCachedBookDetail(id),
       ).thenThrow(exception);
 
       // Act
