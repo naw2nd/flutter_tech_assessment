@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tech_assessment/core/router.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter_tech_assessment/core/utils/data_state.dart';
 import 'package:flutter_tech_assessment/modules/books/presentation/providers/book_likes_provider.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_tech_assessment/modules/books/presentation/widgets/book_tile.dart';
 import 'package:provider/provider.dart';
 
 class BookLikesPage extends StatefulWidget {
@@ -45,64 +43,59 @@ class _BookLikesPageState extends State<BookLikesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Likes')),
+      appBar: AppBar(leading: Icon(Icons.favorite), title: const Text('Likes')),
       body: RefreshIndicator(
         onRefresh: () async {
-          await context.read<BookLikesProvider>().fetchBooks();
+          context.read<BookLikesProvider>().fetchBooks();
         },
-        child: Consumer<BookLikesProvider>(
-          builder: (context, provider, child) {
-            if (provider.state == DataState.loading) {
-              return Center(child: CircularProgressIndicator());
-            }
+        child: Container(
+          margin: EdgeInsets.only(top: 10),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(topLeft: Radius.circular(25)),
+          ),
+          child: Consumer<BookLikesProvider>(
+            builder: (context, provider, child) {
+              if (provider.state == DataState.loading) {
+                return Center(child: CircularProgressIndicator());
+              }
 
-            if (provider.state == DataState.success) {
-              return ListView.builder(
-                physics: AlwaysScrollableScrollPhysics(),
-                controller: _scrollController,
-                itemCount:
-                    provider.favBooks.length + (provider.hasMore ? 1 : 0),
-                itemBuilder: (context, index) {
-                  if (index < provider.favBooks.length) {
-                    final book = provider.favBooks[index];
-                    return ListTile(
-                      title: Text(book.title),
-                      subtitle: Wrap(
-                        children: [
-                          ...book.author.mapIndexed((i, author) {
-                            final text = (i == book.author.length - 1)
-                                ? author
-                                : '$author | ';
-                            return Text(text);
-                          }),
-                        ],
-                      ),
-                      onTap: () async {
-                        await context.push(
-                          '${AppRouteConfig.books}/${book.id}',
+              if (provider.state == DataState.success) {
+                return ClipRRect(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(25),
+                    topRight: Radius.circular(25),
+                  ),
+                  child: ListView.builder(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    controller: _scrollController,
+                    itemCount:
+                        provider.favBooks.length + (provider.hasMore ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      if (index < provider.favBooks.length) {
+                        final book = provider.favBooks[index];
+                        return BookTile(book: book);
+                      } else {
+                        // Show loading indicator at the bottom
+                        return Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 16),
+                            child: CircularProgressIndicator(),
+                          ),
                         );
-                        await provider.fetchBooks();
-                      },
-                    );
-                  } else {
-                    // Show loading indicator at the bottom
-                    return Center(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
-                  }
-                },
-              );
-            }
+                      }
+                    },
+                  ),
+                );
+              }
 
-            if (provider.state == DataState.error) {
-              return Text(provider.errorMessage);
-            }
+              if (provider.state == DataState.error) {
+                return Text(provider.errorMessage);
+              }
 
-            return Container();
-          },
+              return Container();
+            },
+          ),
         ),
       ),
     );
