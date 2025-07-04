@@ -28,6 +28,15 @@ class BaseListResponse<T> extends Equatable {
     );
   }
 
+  Map<String, dynamic> toJson(Map<String, dynamic> Function(T) toJsonT) {
+    return {
+      'count': count,
+      'next': next,
+      'previous': previous,
+      'results': results.map((item) => toJsonT(item)).toList(),
+    };
+  }
+
   BaseListResultEntity<E> toEntity<E>(E Function(T) toEntityE) {
     final page = _getCurrentPage(next, previous);
 

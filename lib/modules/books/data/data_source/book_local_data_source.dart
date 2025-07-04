@@ -1,12 +1,20 @@
 import 'dart:convert';
 
+import 'package:flutter_tech_assessment/core/base/request/base_list_request.dart';
+import 'package:flutter_tech_assessment/core/base/response/base_list_response.dart';
 import 'package:flutter_tech_assessment/core/service/storage/local_storage.dart';
 import 'package:flutter_tech_assessment/core/service/storage/local_storage_key.dart';
 import 'package:flutter_tech_assessment/core/utils/exception.dart';
+import 'package:flutter_tech_assessment/modules/books/data/response/books_response.dart';
 
 abstract class BookLocalDataSource {
   Future<List<int>> getBookIdFavorites();
   Future setBookIdFavorites(List<int> ids);
+  Future<BaseListResponse<BookResponse>> getCachedBook(BaseListRequest request);
+  Future setCachedBook(
+    BaseListRequest request,
+    BaseListResponse<BookResponse> datas,
+  );
 }
 
 class BookLocalDataSourceImpl implements BookLocalDataSource {
@@ -41,6 +49,50 @@ class BookLocalDataSourceImpl implements BookLocalDataSource {
       await _localStorage.set(
         key: LocalStorageKey.favoriteBookIds,
         value: data,
+      );
+    } on Exception catch (e) {
+      throw StorageException(e.toString());
+    }
+  }
+
+  @override
+  Future<BaseListResponse<BookResponse>> getCachedBook(
+    BaseListRequest request,
+  ) async {
+    try {
+      final key = request.toJson();
+      final jsonKey = jsonEncode(key);
+
+      final jsonResult = await _localStorage.get(
+        key: LocalStorageKey.cachedBooks + jsonKey,
+      );
+      final mapResult = jsonDecode(jsonResult);
+      final result = BaseListResponse<BookResponse>.fromJson(
+        mapResult,
+        (json) => BookResponse.fromJson(json),
+      );
+
+      return result;
+    } on Exception catch (e) {
+      throw StorageException(e.toString());
+    }
+  }
+
+  @override
+  Future setCachedBook(
+    BaseListRequest request,
+    BaseListResponse<BookResponse> datas,
+  ) async {
+    try {
+      final key = request.toJson();
+      final jsonKey = jsonEncode(key);
+
+      final value = datas.toJson((e) => e.toJson());
+      final jsonValue = jsonEncode(value);
+
+      await _localStorage.set(
+        key: LocalStorageKey.cachedBooks + jsonKey,
+        value: jsonValue,
       );
     } on Exception catch (e) {
       throw StorageException(e.toString());

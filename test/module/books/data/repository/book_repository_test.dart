@@ -36,6 +36,14 @@ void main() {
       ) async {
         return BooksTestData.baseListBookResponses;
       });
+      when(
+        () => mockBookLocalDataSource.setCachedBook(
+          request,
+          BooksTestData.baseListBookResponses,
+        ),
+      ).thenAnswer((_) async {
+        return;
+      });
 
       // Act
       final result = await bookRepository.fetchBooks(param);
@@ -56,6 +64,14 @@ void main() {
         ) async {
           return BooksTestData.baseListBookResponses;
         });
+        when(
+          () => mockBookLocalDataSource.setCachedBook(
+            request,
+            BooksTestData.baseListBookResponses,
+          ),
+        ).thenAnswer((_) async {
+          return;
+        });
 
         // Act
         final result = await bookRepository.fetchBooks(param);
@@ -73,6 +89,9 @@ void main() {
 
       when(
         () => mockBookRemoteDataSource.fetchBooks(request),
+      ).thenThrow(exception);
+      when(
+        () => mockBookLocalDataSource.getCachedBook(request),
       ).thenThrow(exception);
 
       // Act

@@ -1,9 +1,12 @@
 import 'package:flutter_tech_assessment/core/base/entity/base_list_param_entity.dart';
 import 'package:flutter_tech_assessment/core/base/entity/base_list_result_entity.dart';
 import 'package:flutter_tech_assessment/core/base/request/base_list_request.dart';
+import 'package:flutter_tech_assessment/core/base/response/base_list_response.dart';
+import 'package:flutter_tech_assessment/core/utils/exception.dart';
 import 'package:flutter_tech_assessment/core/utils/result.dart';
 import 'package:flutter_tech_assessment/modules/books/data/data_source/book_local_data_source.dart';
 import 'package:flutter_tech_assessment/modules/books/data/data_source/book_remote_data_source.dart';
+import 'package:flutter_tech_assessment/modules/books/data/response/books_response.dart';
 import 'package:flutter_tech_assessment/modules/books/domain/entity/book_detail_entity.dart';
 import 'package:flutter_tech_assessment/modules/books/domain/entity/book_entity.dart';
 import 'package:flutter_tech_assessment/modules/books/domain/interface/book_interface.dart';
@@ -28,9 +31,39 @@ class BookRepository implements BookInterface {
       final response = await _remoteDataSource.fetchBooks(request);
       final result = response.toEntity<BookEntity>((e) => e.toEntity());
 
+      _setCachedBooks(request, response);
+
       return Result.ok(result);
+    } on ServerException catch (e) {
+      final request = BaseListRequest.fromEntity(param);
+      return _getCachedBooks(request, e);
     } on Exception catch (e) {
       return Result.error(e);
+    }
+  }
+
+  Future _setCachedBooks(
+    BaseListRequest request,
+    BaseListResponse<BookResponse> response,
+  ) async {
+    try {
+      await _localDataSource.setCachedBook(request, response);
+    } catch (e) {
+      return;
+    }
+  }
+
+  Future<Result<BaseListResultEntity<BookEntity>>> _getCachedBooks(
+    BaseListRequest request,
+    Exception prevE,
+  ) async {
+    try {
+      final response = await _localDataSource.getCachedBook(request);
+      final result = response.toEntity<BookEntity>((e) => e.toEntity());
+
+      return Result.ok(result);
+    } on Exception {
+      return Result.error(prevE);
     }
   }
 

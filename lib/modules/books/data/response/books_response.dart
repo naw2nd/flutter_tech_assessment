@@ -52,6 +52,23 @@ class BookResponse extends Equatable {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'authors': authors?.map((a) => a.toJson()).toList(),
+      'summaries': summaries,
+      'translators': translators?.map((a) => a.toJson()).toList(),
+      'subjects': subjects,
+      'bookshelves': bookshelves,
+      'languages': languages,
+      'copyright': copyright,
+      'media_type': mediaType,
+      'formats': formats,
+      'download_count': downloadCount,
+    };
+  }
+
   BookEntity toEntity() {
     final List<String> allAuthors = [
       if (authors != null) ...authors!.map((a) => a.name),
@@ -107,6 +124,10 @@ class Author extends Equatable {
       birthYear: json['birth_year'],
       deathYear: json['death_year'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'name': name, 'birth_year': birthYear, 'death_year': deathYear};
   }
 
   @override
